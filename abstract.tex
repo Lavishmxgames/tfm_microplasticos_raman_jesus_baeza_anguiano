@@ -1,0 +1,21 @@
+\chapter*{RESUMEN} \label{chp:abstract}
+\addcontentsline{toc}{chapter}{RESUMEN}
+
+La contaminación por microplásticos es uno de los retos medioambientales más relevantes del siglo XXI. La espectroscopía Raman identifica el polímero de una partícula comparando su espectro con bibliotecas de referencia, pero la calidad de esa medida depende del tiempo de integración, y el comportamiento de las métricas de similitud frente a esa pérdida de calidad no se ha evaluado sistemáticamente y a escala.
+
+Este trabajo desarrolla un \textit{pipeline} reproducible y paralelizable con Apache Spark que cuantifica la robustez de siete métricas de similitud (coseno, Pearson, Spearman, \textit{Spectral Angle Mapper} (SAM), \textit{Hit Quality Index} (HQI), euclídea y Manhattan) frente a dos mecanismos independientes: la acumulación de espectros reales de integración corta y una degradación paramétrica por ruido. El preprocesado reproduce sin diferencia numérica el protocolo de referencia del director.
+
+Ejecutado sobre cinco polímeros y una biblioteca pública de treinta espectros, el experimento muestra que Pearson es la métrica más robusta frente a la degradación real por acumulación (61,5~\% de aciertos), mientras que coseno, euclídea, HQI y SAM lo son frente a la paramétrica (87,5~\%); Manhattan y Spearman resultan sistemáticamente las menos robustas. Ninguna diferencia es significativa por pares tras corregir por comparaciones múltiples, por lo que la métrica idónea depende del mecanismo concreto de pérdida de calidad. Se detectó además que la biblioteca no cubre dos de los cinco polímeros medidos, limitación de cobertura que condiciona cualquier identificación.
+
+\textbf{Palabras clave:} Big Data, Apache Spark, espectroscopía Raman, microplásticos, métricas de similitud espectral, relación señal-ruido.
+
+\chapter*{ABSTRACT}
+\addcontentsline{toc}{chapter}{ABSTRACT}
+
+Microplastic pollution is one of the most pressing environmental challenges of the 21st century. Raman spectroscopy identifies a particle's polymer by matching its spectrum against reference libraries, but the quality of that measurement depends on integration time, and the behaviour of similarity metrics under such quality loss has not been evaluated systematically and at scale.
+
+This work develops a reproducible, Spark-parallelised pipeline that quantifies the robustness of seven similarity metrics (cosine, Pearson, Spearman, Spectral Angle Mapper (SAM), Hit Quality Index (HQI), Euclidean and Manhattan) against two independent mechanisms: the accumulation of real short-integration-time spectra, and a parametric noise-based degradation. Preprocessing reproduces the supervisor's reference protocol with zero numerical difference.
+
+Run on five polymers and a public library of thirty reference spectra, the experiment shows that Pearson is the most robust metric against real accumulation-driven degradation (61.5~\% accuracy), whereas cosine, Euclidean, HQI and SAM are the most robust against parametric degradation (87.5~\%); Manhattan and Spearman are consistently the least robust. No pairwise difference is significant after correcting for multiple comparisons, so the most suitable metric depends on the specific quality-loss mechanism. The reference library was also found not to cover two of the five measured polymers, a coverage limitation that constrains any identification.
+
+\textbf{Keywords:} Big Data, Apache Spark, Raman spectroscopy, microplastics, spectral similarity metrics, signal-to-noise ratio.

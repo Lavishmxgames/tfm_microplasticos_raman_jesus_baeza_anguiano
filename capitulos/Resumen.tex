@@ -1,0 +1,21 @@
+\chapter{RESUMEN DEL PROYECTO}
+
+\section{Contexto y justificación}
+
+La contaminación por microplásticos es un desafío medioambiental global, y la espectroscopía Raman se ha consolidado como técnica de referencia para identificar el polímero de una partícula mediante comparación con bibliotecas espectrales (\textit{matching}). La calidad del espectro medido depende directamente del tiempo de integración: un tiempo corto, deseable para aumentar el rendimiento de muestreo, produce espectros ruidosos y más difíciles de identificar. El comportamiento de las distintas métricas de similitud frente a esa degradación no suele evaluarse de forma sistemática y a escala.
+
+\section{Planteamiento del problema}
+
+¿Cómo se degrada el \textit{matching} de un espectro Raman de microplástico contra una base de datos de referencia a medida que empeora la calidad de la señal, y qué métrica de similitud es más robusta frente a esa degradación? El proyecto combina investigación aplicada —la caracterización empírica de siete métricas frente al ruido— con desarrollo técnico: un \textit{pipeline} de preprocesado, \textit{matching} y análisis estadístico reproducible y paralelizable con Apache Spark.
+
+\section{Objetivos del proyecto}
+
+El objetivo general es evaluar a gran escala la robustez de distintas métricas de similitud espectral frente a la degradación de la calidad del espectro Raman, implementando un \textit{pipeline} reproducible y paralelizable. Los objetivos específicos, detallados en el Capítulo~3, abarcan la validación del preprocesado frente al protocolo de referencia, la implementación de siete métricas, el diseño y paralelización de la matriz experimental, la cuantificación de la robustez mediante el punto de ruptura y un análisis estadístico, y la producción del entregable visual.
+
+\section{Resultados obtenidos}
+
+El \textit{pipeline} reproduce el protocolo de referencia con diferencia numérica nula y el experimento se ha ejecutado completo sobre cinco polímeros y la biblioteca pública \emph{Hagelskjær Microplastic Solution Library~1.1}, superando la validación numérica acordada (1885 comparaciones alineadas). Pearson resulta la métrica más robusta frente a la degradación real por acumulación (61,5~\% de aciertos) y coseno, euclídea, HQI y SAM frente a la degradación paramétrica (87,5~\%); Manhattan y Spearman son las menos robustas, sin diferencias significativas por pares tras la corrección de Holm. Se detectó además que la biblioteca de referencia no cubre dos de los cinco polímeros medidos.
+
+\section{Estructura de la memoria}
+
+La memoria se organiza en nueve capítulos. El Capítulo~2 presenta los antecedentes y el estado del arte; el Capítulo~3 detalla los objetivos; el Capítulo~4, núcleo del documento, describe la planificación, el \textit{pipeline}, las decisiones técnicas y los resultados; el Capítulo~5 discute limitaciones y adaptaciones; los Capítulos~6 y~7 recogen conclusiones y futuras líneas de trabajo; los Capítulos~8 y~9, las referencias bibliográficas y los anexos técnicos.

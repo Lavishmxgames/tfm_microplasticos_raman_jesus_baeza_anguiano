@@ -1,0 +1,53 @@
+\chapter{OBJETIVOS}
+
+Este capítulo detalla los objetivos del Trabajo Fin de Máster, diferenciando entre el objetivo general que articula la contribución del proyecto y los objetivos específicos que estructuran el trabajo técnico. Se cierra con una descripción del alcance y de los beneficios esperados.
+
+\section{Objetivo general}
+
+El objetivo general del presente Trabajo Fin de Máster consiste en \textbf{evaluar a gran escala la robustez de distintas métricas de similitud espectral frente a la degradación de la calidad del espectro Raman en la identificación de microplásticos, e implementar para ello un \textit{pipeline} reproducible y paralelizable} que permita ejecutar dicha evaluación sobre el volumen combinatorio de comparaciones que exige el problema (polímeros~$\times$~niveles de calidad~$\times$~métricas~$\times$~espectros de referencia).
+
+Se trata de un proyecto de carácter mixto: combina una componente de investigación aplicada, al caracterizar empíricamente el comportamiento de siete métricas de similitud frente al ruido espectral, con una componente de ingeniería de datos centrada en la construcción de un \textit{pipeline} de preprocesado, matching y análisis estadístico validado, reproducible y paralelizable con Apache Spark.
+
+\section{Objetivos específicos}
+
+Los objetivos específicos derivan del objetivo general y han servido de guía para organizar las fases del proyecto. La numeración \textbf{OE1--OE5} se utiliza de forma transversal en el Capítulo~4 para rastrear la correspondencia entre tareas, código y objetivos.
+
+\begin{itemize}
+    \item \textbf{OE1. Implementar y validar un \textit{pipeline} de preprocesado espectral} (recorte por índice, eliminación de picos espurios, acumulación por suma y corrección de línea base) equivalente al protocolo de referencia definido por el director del proyecto, y verificar dicha equivalencia de forma numérica sobre los espectros reales.
+    \item \textbf{OE2. Implementar un conjunto de al menos siete métricas de similitud} espectral como funciones reutilizables y vectorizables, con una convención homogénea en la que un valor mayor siempre indica mayor parecido, con independencia de si la métrica original es una similitud o una distancia.
+    \item \textbf{OE3. Diseñar y ejecutar la matriz experimental} (polímero~$\times$~nivel de acumulación~$\times$~métrica~$\times$~espectro de la base de datos de referencia) y paralelizar su cómputo con Apache Spark, verificando la equivalencia entre el motor de referencia (\textit{pandas}/NumPy) y el motor distribuido.
+    \item \textbf{OE4. Cuantificar la robustez de cada métrica} frente a la degradación de la calidad espectral mediante el concepto de \emph{punto de ruptura} (el número mínimo de acumulaciones a partir del cual el primer resultado del \textit{matching} es el polímero correcto de forma estable) y un análisis estadístico de las diferencias entre métricas (test de Friedman, tamaño del efecto y comparaciones post-hoc por pares).
+    \item \textbf{OE5. Producir el entregable visual solicitado por el director del proyecto} (similitud del mejor resultado frente al nivel de acumulación, con una curva por métrica y por polímero) y derivar de él una guía empírica de qué métrica conviene emplear según la calidad esperada del espectro.
+\end{itemize}
+
+\section{Alcance y fuera del alcance}
+
+La delimitación del alcance es fundamental para garantizar la viabilidad en el plazo previsto. \textbf{Se incluye} en el alcance:
+
+\begin{itemize}
+    \item La implementación y validación numérica del \textit{pipeline} de preprocesado frente al protocolo de referencia del director del proyecto.
+    \item La implementación de las siete métricas de similitud y del motor de \textit{matching}, en su versión de referencia (\textit{pandas}) y en su versión distribuida (PySpark).
+    \item El diseño de la matriz experimental completa y del análisis estadístico asociado (test de Friedman, tamaño del efecto de Kendall y post-hoc de Wilcoxon con corrección de Holm--Bonferroni).
+    \item Un mecanismo de comprobación cruzada mediante degradación controlada de la señal (ruido, deriva de línea base y submuestreo) como segundo eje de calidad independiente de la acumulación.
+    \item La ejecución del experimento completo y la generación del entregable visual, ya realizada con la base de datos de referencia real (Hagelskjær Microplastic Solution Library~1.1, de acceso público).
+\end{itemize}
+
+\textbf{Queda fuera del alcance}, por las razones justificadas en el anteproyecto aprobado y en el diseño experimental acordado con el director:
+
+\begin{itemize}
+    \item El desarrollo de nuevas métricas de similitud. Se comparan siete métricas ya establecidas en la literatura y en la práctica de la espectroscopía analítica, no se propone ninguna nueva.
+    \item El entrenamiento de modelos de aprendizaje automático para la clasificación espectral. El proyecto compara métricas de similitud directa, no clasificadores entrenados.
+    \item El despliegue en infraestructura distribuida real (\textit{cluster} multi-nodo o \textit{cloud}). La paralelización con Apache Spark se valida en un entorno local; el despliegue distribuido físico se plantea como trabajo futuro.
+\end{itemize}
+
+\section{Beneficios del proyecto}
+
+El proyecto aporta beneficios tanto a la comunidad científica dedicada al análisis de microplásticos como al ámbito de la ingeniería de datos aplicada a la química analítica:
+
+\begin{itemize}
+    \item \textbf{Guía empírica y reproducible} sobre qué métrica de similitud espectral resulta más robusta frente a la degradación de la calidad de la señal, útil para quien deba decidir un criterio de \textit{matching} en condiciones de tiempo de integración limitado.
+    \item \textbf{Pipeline validado y reutilizable}, verificado punto a punto frente al protocolo de referencia, que puede aplicarse a otros conjuntos de espectros Raman de microplásticos sin modificaciones sustanciales.
+    \item \textbf{Escalado horizontal del cómputo de similitud}, mediante una implementación en Apache Spark equivalente y verificada frente a la referencia en \textit{pandas}, que permite extender el análisis a bases de datos de referencia de mayor tamaño sin rediseñar el pipeline.
+    \item \textbf{Comprobación cruzada metodológica}, al repetir el análisis con un mecanismo de degradación controlada independiente de la acumulación real, lo que refuerza la fiabilidad de las conclusiones frente a un único mecanismo de generación de ruido.
+    \item \textbf{Valor metodológico y docente:} el proyecto sirve como caso de estudio de aplicación de tecnologías de procesamiento a gran escala a un problema científico concreto, con un diseño experimental y estadístico documentado y reproducible.
+\end{itemize}

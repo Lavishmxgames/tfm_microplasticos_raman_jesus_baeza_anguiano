@@ -1,0 +1,20 @@
+\chapter{CONCLUSIONES}
+
+\textit{Nota:} este capítulo tiene carácter preliminar en la entrega intermedia. Se redactará su versión definitiva en la entrega final, una vez ejecutado el experimento completo con la base de datos de referencia real y obtenidos los resultados de robustez de métricas.
+
+\section{Conclusiones del trabajo}
+
+En el estado actual del proyecto pueden formularse las siguientes conclusiones parciales:
+
+\begin{itemize}
+    \item El pivote de diseño hacia una comparación empírica de siete métricas de similitud frente a la degradación de la calidad espectral (ADR-004) constituye una pregunta de investigación con mayor valor científico que la propuesta original y se ha confirmado viable con los datos reales disponibles.
+    \item El \textit{pipeline} de preprocesado reconstruido en el paquete \texttt{microraman} reproduce de forma exacta (diferencia máxima absoluta de~0) el protocolo de referencia validado por el director del proyecto, lo que garantiza que las conclusiones sobre robustez de métricas son atribuibles al fenómeno estudiado.
+    \item Las siete métricas de similitud y el motor de \textit{matching}, en su versión de referencia (pandas/NumPy) y en su versión distribuida (PySpark), están implementados, probados, verificados entre sí y \textbf{ya ejecutados sobre el experimento completo} con la base de datos de referencia real (\emph{Hagelskjær Microplastic Solution Library~1.1}, localizada de acceso público), con validación numérica superada (1885 comparaciones alineadas).
+    \item De forma preliminar (véase el Capítulo~4 para el detalle numérico): Pearson resulta la métrica más robusta frente a la acumulación real de espectros de baja integración, mientras que coseno, euclídea, HQI y SAM lo son frente a la degradación paramétrica controlada; ninguna diferencia por pares es estadísticamente significativa tras la corrección de Holm. Se ha detectado además que la base de datos de referencia no cubre dos de los cinco polímeros medidos (BioPBS y ECOVIO), lo que limita el alcance de estas conclusiones a los tres polímeros con verdad-terreno disponible (PET, PLA, PP).
+\end{itemize}
+
+Las conclusiones definitivas, con la interpretación completa del punto de ruptura de cada métrica por polímero y de los resultados del análisis estadístico, se pulirán en la memoria final; los datos numéricos que las sustentan ya proceden de la ejecución real del experimento, no de una base de datos sintética.
+
+\section{Conclusiones personales}
+
+Se completará en la entrega final del TFM.

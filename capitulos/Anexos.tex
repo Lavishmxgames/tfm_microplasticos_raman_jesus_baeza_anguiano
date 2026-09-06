@@ -1,0 +1,54 @@
+\chapter{ANEXOS}
+
+\section*{Anexo A. Estructura del repositorio de código}
+\addcontentsline{toc}{section}{Anexo A. Estructura del repositorio de código}
+
+El código fuente del proyecto se mantiene en un repositorio Git privado, independiente de esta memoria: \url{https://github.com/Lavishmxgames/master_bigdata}. Está organizado como un paquete Python instalable (\texttt{pip install -e .}), con la siguiente estructura:
+
+\begin{lstlisting}[language=bash, caption={Estructura del repositorio \texttt{master\_bigdata}.}]
+src/microraman/
+  io.py              carga de .wdf y de la base de datos de referencia
+  preprocessing.py   recorte por indice, despiking, recorte por cm-1, baseline airPLS
+  accumulation.py    acumulacion por suma directa (niveles N)
+  pipeline.py        orquestador end-to-end del preprocesado
+  metrics.py         7 metricas de similitud (cosine, pearson, spearman,
+                      sam, hqi, euclidean, manhattan)
+  matching.py        motor de matching de referencia (pandas / NumPy)
+  matching_spark.py  motor de matching distribuido (PySpark)
+  experiment.py      matriz experimental completa + punto de ruptura
+  stats.py           Friedman, post-hoc Wilcoxon/Holm, W de Kendall
+  degradation.py     degradacion controlada (ruido, deriva, submuestreo)
+  plotting.py        entregable visual (similitud vs. acumulacion)
+scripts/
+  validate_vs_notebook.py     validacion frente al notebook de referencia
+  benchmark_despiking.py      coste del despiking sobre el dataset completo
+  benchmark_spark_scaling.py  speedup de PySpark vs. pandas y vs. nucleos
+  run_experiment.py           ejecucion end-to-end del experimento completo
+  exploratory_figures.py      figuras descriptivas de los datos reales
+tests/                        97 pruebas automatizadas (pytest)
+docs/                         fragmentos LaTeX de la memoria
+notebooks/                    notebook de referencia del director del proyecto
+\end{lstlisting}
+
+\section*{Anexo B. Reproducibilidad e integración continua}
+\addcontentsline{toc}{section}{Anexo B. Reproducibilidad e integración continua}
+
+El repositorio incorpora integración continua mediante GitHub Actions, que ejecuta en cada cambio la suite de pruebas (\texttt{pytest}) y el análisis de estilo (\texttt{ruff check} y \texttt{ruff format --check}). El entorno se reproduce con:
+
+\begin{lstlisting}[language=bash, caption={Instalación del entorno y ejecución de las pruebas.}]
+py -3.11 -m venv .venv
+.venv/Scripts/python.exe -m pip install --upgrade pip
+.venv/Scripts/python.exe -m pip install -r requirements.txt
+.venv/Scripts/python.exe -m pytest tests/ -v
+\end{lstlisting}
+
+Y el experimento completo, con la base de datos de referencia ya disponible en \texttt{Databases/Hagelskjaer/}, se ejecuta con:
+
+\begin{lstlisting}[language=bash, caption={Ejecución del experimento completo (matriz + estadística + degradación controlada).}]
+python scripts/run_experiment.py --database Databases/Hagelskjaer --full --degradation
+\end{lstlisting}
+
+\section*{Anexo C. Repositorio de la memoria}
+\addcontentsline{toc}{section}{Anexo C. Repositorio de la memoria}
+
+El código fuente de esta memoria (LaTeX) se mantiene en un repositorio Git independiente del código del experimento: \url{https://github.com/Lavishmxgames/tfm_microplasticos_raman_jesus_baeza_anguiano}.

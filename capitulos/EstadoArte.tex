@@ -1,0 +1,37 @@
+\chapter{ANTECEDENTES / ESTADO DEL ARTE}
+
+Este capítulo contextualiza el proyecto revisando los fundamentos de la clasificación espectral de microplásticos, las herramientas y bases de datos \textit{open-source} existentes, las métricas de similitud espectral empleadas habitualmente en este dominio, y las tecnologías de procesamiento a gran escala sobre las que se apoya la implementación. La revisión establece la base sobre la que se identifica la pregunta de investigación que el TFM pretende responder.
+
+\section{Estado del arte}
+
+\subsection{Contaminación por microplásticos y retos analíticos}
+
+Los microplásticos, definidos como partículas plásticas de tamaño inferior a 5~mm, constituyen un contaminante ubicuo en ecosistemas marinos, fluviales, terrestres y atmosféricos \citep{cole2011microplastics}. Su persistencia y su potencial transferencia a la cadena trófica y al organismo humano \citep{hernandez2017microplastics} han impulsado el desarrollo de métodos analíticos capaces de identificar el tipo de polímero con precisión. Las dos técnicas espectroscópicas dominantes son la espectroscopía Raman y la espectroscopía FTIR, ambas capaces de generar huellas espectrales características de cada polímero \citep{araujo2018raman, schymanski2021microplastics}. Un reto práctico compartido por ambas técnicas es que la calidad de la señal depende directamente del tiempo de integración del instrumento: un tiempo de integración corto, deseable para aumentar el rendimiento de muestreo, produce espectros con menor relación señal/ruido (SNR) y, por tanto, más difíciles de identificar correctamente.
+
+\subsection{Herramientas y bases de datos \textit{open-source} de referencia}
+
+Entre las herramientas \textit{open-source} para la identificación de microplásticos, Open Specy se ha consolidado como la plataforma de referencia comunitaria \citep{cowger2021openspecy}. En su versión 1.0, Open Specy integra una biblioteca de más de 40.000 espectros de referencia procedentes de repositorios como RRUFF y la Raman Open Database, junto con clasificadores basados en aprendizaje automático (K-medoids y regresión logística) que alcanzan en torno al 96\% de precisión sobre su conjunto derivado \citep{cowger2025openspecy}. siMPle \citep{primpke2020simple} es un software independiente orientado al análisis sistemático de espectros FTIR de microplásticos, y las bases de datos de referencia como la de \citet{primpke2018reference} aportan bibliotecas espectrales curadas que complementan estos esfuerzos.
+
+Para el presente TFM, la base de datos de referencia empleada en el \textit{matching} es la \emph{Hagelskjær Microplastic Solution Library~1.1} \citep{hagelskjaer2025library}, de acceso público en Zenodo bajo licencia CC-BY-4.0, que se compone de 30~espectros de referencia (28~polímeros y 2~minerales) en formato de texto plano.
+
+\subsection{Métricas de similitud espectral}
+
+La comparación entre un espectro medido y una biblioteca de referencia requiere una métrica de similitud (o distancia, transformada a similitud) que cuantifique el parecido entre ambos vectores de intensidad. En la práctica de la espectroscopía analítica y del procesamiento de señal se emplean, entre otras, la correlación de Pearson y su variante no paramétrica de Spearman, la similitud coseno y su transformación angular (\emph{Spectral Angle Mapper}, SAM), el \emph{Hit Quality Index} (HQI, equivalente al cuadrado de la similitud coseno y de uso extendido en librerías comerciales de espectroscopía), y las distancias $L_1$ (Manhattan) y $L_2$ (euclídea) sobre vectores normalizados. No existe un consenso único sobre qué métrica es preferible en todas las condiciones; su comportamiento relativo depende del tipo de degradación de la señal, lo que motiva una comparación empírica sistemática como la que plantea este TFM.
+
+\subsection{Tecnologías de procesamiento a gran escala}
+
+El paradigma Big Data ofrece mecanismos probados para el procesamiento distribuido de grandes volúmenes de datos. Apache Spark \citep{zaharia2010spark, zaharia2016spark} introdujo el concepto de \textit{Resilient Distributed Dataset} (RDD) y, posteriormente, las abstracciones DataFrame y Dataset \citep{armbrust2015sparksql}, permitiendo operaciones en memoria sustancialmente más rápidas que los motores basados en disco para cargas iterativas. Su API en Python (PySpark) permite paralelizar operaciones vectorizadas de manera directa, lo que resulta especialmente adecuado para un problema como el de este TFM, en el que la carga computacional proviene de una combinatoria de comparaciones (polímero~$\times$~nivel de calidad~$\times$~métrica~$\times$~espectro de referencia) fácilmente paralelizable por bloques independientes.
+
+\section{Contexto y justificación}
+
+El comportamiento de las métricas de similitud espectral frente al ruido no suele evaluarse de forma sistemática y a escala: los estudios que emplean una métrica concreta rara vez justifican esa elección frente a las alternativas, ni cuantifican en qué punto de degradación de la señal deja de ser fiable. Esta ausencia de una comparación empírica y reproducible es la brecha que aborda este TFM: no se trata de proponer una nueva técnica de clasificación espectral ni de mejorar una herramienta existente, sino de generar evidencia empírica, a partir de datos reales y de una matriz experimental de gran volumen, sobre qué métrica de similitud es más robusta frente a la pérdida de calidad de la señal, y de hacerlo con un \textit{pipeline} paralelizable que permita repetir el análisis sobre bases de datos de referencia más amplias sin rediseñar el proceso.
+
+\section{Planteamiento del problema}
+
+A partir de la revisión anterior, la pregunta de investigación puede formularse en los siguientes términos:
+
+\begin{quote}
+\textit{¿Cómo se degrada el resultado del \textit{matching} de un espectro Raman de microplástico contra una base de datos de referencia a medida que empeora la calidad de la señal medida (relación señal/ruido), y qué métrica de similitud espectral es más robusta frente a esa degradación?}
+\end{quote}
+
+Este planteamiento orienta las decisiones técnicas del proyecto: el uso de la acumulación de espectros de integración corta como mecanismo controlado para variar la SNR, la implementación de un conjunto amplio de métricas de similitud bajo una convención homogénea, la paralelización del cómputo combinatorio con Apache Spark, y un diseño estadístico de medidas repetidas (Friedman y post-hoc de Wilcoxon con corrección de Holm--Bonferroni) que permita determinar si las diferencias observadas entre métricas son estadísticamente significativas y no atribuibles al azar.

@@ -1,0 +1,38 @@
+\chapter{DISCUSIÓN}
+
+Este capítulo recoge las reflexiones sobre el trabajo realizado, las limitaciones observadas y las adaptaciones efectuadas respecto al planteamiento inicial, ya con los resultados del experimento completo ejecutado con la base de datos de referencia real. Su redacción se pulirá para la entrega final, pero los hallazgos que recoge proceden ya de datos reales, no sintéticos.
+
+\section{Adecuación de la metodología al problema}
+
+El diseño experimental adoptado tras el pivote (ADR-004) se ha mostrado adecuado al objetivo del proyecto. Concentrar la contribución en una comparación empírica y reproducible de siete métricas de similitud, en lugar de en el desarrollo o ajuste de un clasificador, permite responder a la pregunta de investigación sin depender de la disponibilidad ni de la idoneidad de modelos preentrenados para el dominio de microplásticos. La validación punto a punto del \textit{pipeline} de preprocesado frente al protocolo de referencia del director (diferencia máxima absoluta de~0) confirma que la reconstrucción del \textit{pipeline} en el paquete \texttt{microraman} es fiel al método científico acordado, condición necesaria para que cualquier conclusión posterior sobre robustez de métricas sea atribuible al fenómeno estudiado y no a un error de implementación.
+
+\section{Cambios respecto al planteamiento inicial}
+
+El cambio más relevante respecto al anteproyecto original es el pivote de diseño documentado en el ADR-004: la arquitectura inicialmente prevista, basada en ingesta con Apache Kafka y clasificación mediante los modelos preentrenados de Open Specy sobre un flujo Spark Structured Streaming, se sustituyó por el diseño actual, centrado en la robustez de métricas de similitud frente a la degradación de la calidad del espectro. Este cambio se acordó con el director del proyecto porque:
+
+\begin{itemize}
+    \item No existe en la literatura una comparación sistemática y a escala de las métricas de similitud habituales en \textit{matching} espectral frente a distintos niveles de degradación de la señal, lo que dota al nuevo planteamiento de mayor valor científico que la propuesta original.
+    \item Reutilizar los clasificadores de Open Specy como caja negra habría acotado la contribución del TFM a una capa de ingesta y orquestación, sin aportar evidencia empírica propia sobre el problema de fondo (la fiabilidad del \textit{matching} en condiciones de baja calidad de señal).
+    \item El nuevo diseño es compatible con los datos reales disponibles (espectros Raman de cinco polímeros con distintos tiempos de integración) y con el protocolo de referencia ya validado por el director, lo que reduce el riesgo de ejecución frente a depender de una integración en tiempo real con instrumentos.
+\end{itemize}
+
+Este pivote se refleja de forma transversal en toda la memoria: los capítulos de Objetivos, Antecedentes/Estado del arte y Desarrollo se han redactado ya conforme al diseño vigente.
+
+\section{Limitaciones identificadas}
+
+El trabajo presenta varias limitaciones que es honesto reconocer en esta entrega intermedia:
+
+\begin{itemize}
+    \item \textbf{Cobertura incompleta de la base de datos de referencia.} La limitación más relevante identificada tras ejecutar el experimento es que dos de los cinco polímeros medidos (BioPBS y ECOVIO) no están en el catálogo de la \emph{Hagelskjær Microplastic Solution Library~1.1} (28~polímeros y 2~minerales), por lo que su exactitud de identificación es del 0\% con las siete métricas, en todos los niveles de calidad. No es un fallo del \textit{pipeline} ni de las métricas desarrolladas, sino una limitación de cobertura de la base de datos de referencia empleada; el análisis estadístico se restringe correctamente a los tres polímeros con verdad-terreno disponible (PET, PLA, PP).
+    \item \textbf{Tamaño muestral reducido para el análisis estadístico.} Al restringir el análisis a los tres polímeros con verdad-terreno en la base de datos, el test de Friedman dispone de pocos bloques (39 en acumulación, 24 en degradación), lo que limita la potencia estadística: ninguna diferencia entre métricas sobrevive la corrección de Holm por pares, pese a existir una tendencia observable en accuracy@1/@3.
+    \item \textbf{Escalado distribuido validado en local, no en clúster real.} La paralelización con Apache Spark se valida en un entorno de un único nodo; el despliegue en infraestructura distribuida física queda fuera del alcance de este TFM y se plantea como trabajo futuro.
+    \item \textbf{Cinco polímeros y una única base de datos de referencia.} Las conclusiones sobre robustez de métricas se obtendrán sobre un conjunto acotado de polímeros (PET, PP, PLA, BioPBS y ECOVIO) y una única biblioteca de referencia; su generalización a otras familias de polímeros o a espectroscopía FTIR requeriría repetir el análisis, si bien el \textit{pipeline} está diseñado para admitirlo sin rediseño.
+\end{itemize}
+
+\section{Interpretación de los primeros resultados}
+
+Los resultados obtenidos (Capítulo~4, Resultados parciales) muestran un patrón no completamente coincidente entre los dos mecanismos de degradación de calidad estudiados: Pearson es la métrica más robusta frente a la acumulación real de espectros de baja integración, mientras que coseno, euclídea, HQI y SAM son las más robustas frente a la degradación paramétrica controlada (ruido gaussiano sintético). Ambos mecanismos coinciden, en cambio, en que Manhattan y Spearman son consistentemente las métricas menos robustas. Una posible explicación es que la acumulación real, además de mejorar la relación señal-ruido, puede dejar restos de deriva de línea base pese a la corrección \texttt{airPLS}, frente a lo cual Pearson es invariante por construcción (al ser invariante a desplazamientos aditivos), mientras que coseno y SAM son invariantes a escala pero no a offset --- una propiedad que pesa menos cuando la degradación es puramente un ruido gaussiano añadido sobre un espectro ya limpio, como en la degradación paramétrica. Esta discrepancia sugiere que la elección de métrica más adecuada puede depender del mecanismo concreto de pérdida de calidad, y no debería generalizarse sin más a otros contextos de ruido instrumental.
+
+\section{Impacto esperado}
+
+La principal contribución del proyecto, al cierre de esta entrega intermedia, es un \textit{pipeline} de preprocesado, comparación de métricas y análisis estadístico, validado numéricamente, cubierto por pruebas automatizadas y ya ejecutado con la base de datos de referencia real. El resultado obtenido —una guía empírica sobre qué métrica de similitud espectral resulta más robusta según el mecanismo de degradación de la calidad de la señal— tiene valor tanto para la comunidad de análisis de microplásticos como para cualquier aplicación de \textit{matching} espectral en condiciones de señal degradada, si bien su generalización debe matizarse por el tamaño muestral reducido y por la cobertura incompleta de la base de datos de referencia empleada.
