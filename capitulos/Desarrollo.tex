@@ -284,6 +284,57 @@ Pearson resulta la métrica más robusta frente a la acumulación real de espect
 \label{fig:similitud-acumulacion}
 \end{figure}
 
+\textbf{Punto de ruptura y ranking de robustez.} El punto de ruptura de una métrica para un polímero es el nivel de calidad mínimo a partir del cual el resultado de rango~1 es el polímero correcto \emph{de forma estable} (es decir, también para todos los niveles superiores). La Tabla~\ref{tab:ruptura} lo agrega por métrica y la Figura~\ref{fig:heatmap-acumulacion} lo desglosa por polímero.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}p{0.2\textwidth}p{0.26\textwidth}p{0.13\textwidth}p{0.1\textwidth}p{0.14\textwidth}@{}}
+    \toprule
+    \textbf{Eje de calidad} & \textbf{Métrica} & \textbf{Ruptura media} & \textbf{Mediana} & \textbf{Polímeros nunca identificados} \\
+    \midrule
+    Acumulación ($N$) & Pearson & 101,7 & 100 & 2 \\
+    Acumulación ($N$) & Coseno = Euclídea = HQI = SAM & 116,7 & 100 & 2 \\
+    Acumulación ($N$) & Spearman & 110,0 & 110 & 3 \\
+    Acumulación ($N$) & Manhattan & 50,0 & 50 & 3 \\
+    \addlinespace
+    Degradación (SNR) & Coseno = Euclídea = HQI = SAM & 2,7 & 2,0 & 2 \\
+    Degradación (SNR) & Pearson & 3,7 & 5,0 & 2 \\
+    Degradación (SNR) & Spearman & 3,5 & 3,5 & 3 \\
+    Degradación (SNR) & Manhattan & 1,0 & 1,0 & 3 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Punto de ruptura por métrica y eje de degradación de calidad. Un valor menor indica que la métrica tolera más degradación antes de fallar; la última columna indica sobre cuántos de los cinco polímeros medidos la métrica no llega a acertar en ningún nivel.}
+  \label{tab:ruptura}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{imagenes/accumulation_breakpoint_heatmap.png}
+\caption{Punto de ruptura por métrica y polímero en el eje de acumulación. Las celdas vacías indican que esa métrica nunca identifica correctamente ese polímero de forma estable.}
+\label{fig:heatmap-acumulacion}
+\end{figure}
+
+Esta tabla exige una lectura cuidadosa, porque el punto de ruptura medio \emph{no} ordena las métricas por calidad. Manhattan presenta el mejor valor aparente (50 acumulaciones), pero ese promedio se calcula únicamente sobre los dos polímeros que llega a identificar (PET y PP); en PLA nunca acierta, mientras que Pearson, con una media peor (101,7), sí resuelve los tres polímeros disponibles. Es decir, la métrica con menor punto de ruptura medio es también una de las de peor exactitud global: el promedio premia implícitamente a quien se rinde en los casos difíciles. Por eso la exactitud de la Tabla~\ref{tab:accuracy} y la columna de polímeros nunca identificados deben leerse junto al punto de ruptura, y no de forma aislada.
+
+\textbf{Comprobación cruzada mediante degradación paramétrica.} Para comprobar si el comportamiento observado depende del mecanismo concreto de pérdida de calidad, se repitió toda la matriz experimental sustituyendo la acumulación real por una degradación sintética (ruido gaussiano a una SNR objetivo, deriva de línea base y submuestreo) aplicada al espectro más limpio de cada polímero. Las Figuras~\ref{fig:similitud-snr} y~\ref{fig:heatmap-degradacion} son las equivalentes de las anteriores con la SNR como eje de calidad.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{imagenes/degradation_similarity.png}
+\caption{Similitud del mejor resultado (rango~1) frente a la SNR de la degradación paramétrica, una curva por métrica y una subgráfica por polímero medido.}
+\label{fig:similitud-snr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{imagenes/degradation_breakpoint_heatmap.png}
+\caption{Punto de ruptura por métrica y polímero en el eje de degradación paramétrica, expresado como SNR mínima para un acierto estable.}
+\label{fig:heatmap-degradacion}
+\end{figure}
+
+La comparación entre ambos mecanismos arroja una coincidencia parcial: los dos coinciden en que Manhattan y Spearman son las métricas menos fiables, pero discrepan en el primer puesto (Pearson en acumulación real frente al grupo coseno/euclídea/HQI/SAM en degradación paramétrica). Las curvas de la Figura~\ref{fig:similitud-snr} son además notablemente más suaves y monótonas que las de la Figura~\ref{fig:similitud-acumulacion}, lo que resulta coherente con el hecho de que la degradación sintética modela únicamente la pérdida de relación señal-ruido, mientras que la acumulación real de espectros de integración corta arrastra también artefactos residuales de línea base y de eliminación de picos espurios. Esta diferencia se discute en el Capítulo~5.
+
 \textbf{Hallazgo no anticipado:} dos de los cinco polímeros medidos (BioPBS y ECOVIO) obtienen una exactitud del 0\% con las siete métricas, en todos los niveles de calidad, incluido el de máxima calidad. La causa, verificada, no es una limitación del \textit{pipeline} ni de las métricas: la \emph{Hagelskjær Microplastic Solution Library~1.1} no incluye BioPBS ni ECOVIO en su catálogo de 28~polímeros y 2~minerales de referencia. Esta limitación de cobertura de la base de datos se documenta en el capítulo de Discusión y se propone como línea de trabajo futuro ampliar o combinar la base de datos de referencia para cubrir ambos polímeros.
 
 La redacción detallada de estos resultados, junto con su discusión completa, se pulirá para la entrega final del proyecto; los datos aquí presentados proceden ya de la ejecución real, no de una base de datos sintética.
