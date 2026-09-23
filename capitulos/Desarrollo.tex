@@ -1,6 +1,6 @@
 \chapter{DESARROLLO DEL PROYECTO}
 
-Este capítulo constituye el núcleo técnico de la memoria. Se describen la planificación real del proyecto, la solución implementada, las metodologías y herramientas empleadas, los recursos requeridos, el presupuesto estimado, el análisis de viabilidad y los resultados parciales obtenidos a la fecha de esta entrega intermedia.
+Este es el capítulo técnico. Recorre la planificación real del proyecto, el \textit{pipeline} implementado y las decisiones que hay detrás, los recursos y el presupuesto, la viabilidad, la sostenibilidad y los resultados obtenidos hasta la fecha.
 
 \section{Planificación del proyecto}
 
@@ -53,13 +53,13 @@ A la fecha de esta entrega intermedia (septiembre de 2026), las Fases~1 y~2 est�
 \label{fig:gantt}
 \end{figure}
 
-La línea de redacción de la memoria avanza en paralelo a las Fases~2 y~3, lo que permite consolidar decisiones técnicas a medida que se toman y reducir la carga final de documentación.
+La memoria se ha ido redactando en paralelo a las Fases~2 y~3, para documentar cada decisión técnica cuando aún estaba fresca y no acumular toda la escritura al final.
 
 \section{Descripción de la solución, metodologías y herramientas empleadas}
 
 \subsection{Visión general del pipeline}
 
-La solución se articula como un paquete Python instalable, \texttt{microraman}, organizado en módulos independientes y probados por separado, que se ejecutan de forma encadenada sobre cada espectro medido. La Figura~\ref{fig:pipeline} presenta el flujo de alto nivel, desde la carga del fichero de instrumento hasta el resultado estadístico final.
+La solución es un paquete Python instalable, \texttt{microraman}, con módulos independientes que se prueban por separado y se encadenan sobre cada espectro medido. La Figura~\ref{fig:pipeline} presenta el flujo de alto nivel, desde la carga del fichero de instrumento hasta el resultado estadístico final.
 
 \begin{figure}[H]
 \centering
@@ -105,9 +105,9 @@ El preprocesado replica paso a paso el protocolo de referencia acordado con el d
 
 \begin{enumerate}
     \item \textbf{Recorte por índice de píxel:} se conservan las columnas \texttt{[220:900]} de la matriz de espectros, descartando los extremos del detector.
-    \item \textbf{Eliminación de picos espurios (\textit{despiking}):} método de Coca-López basado en la prominencia y la anchura de los picos (\texttt{scipy.signal.find\_peaks} + \texttt{peak\_widths}); los picos con anchura por debajo de un umbral y prominencia por encima de otro se marcan como espurios y se sustituyen por interpolación lineal a partir de las muestras vecinas no marcadas. El coste sobre el conjunto completo (50.000~espectros) es de aproximadamente 2,4~segundos en un único nodo, por lo que este paso no condiciona el diseño distribuido.
+    \item \textbf{Eliminación de picos espurios (\textit{despiking}):} método de Coca-López \citep{cocalopez2024despiking} basado en la prominencia y la anchura de los picos (\texttt{scipy.signal.find\_peaks} + \texttt{peak\_widths}); los picos con anchura por debajo de un umbral y prominencia por encima de otro se marcan como espurios y se sustituyen por interpolación lineal a partir de las muestras vecinas no marcadas. El coste sobre el conjunto completo (50.000~espectros) es de aproximadamente 2,4~segundos en un único nodo, por lo que este paso no condiciona el diseño distribuido.
     \item \textbf{Acumulación:} para cada nivel~$N \in \{10000, 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1\}$ se calcula la \textit{suma directa} de los primeros~$N$ espectros (no se promedia), simulando un mayor tiempo de integración del instrumento.
-    \item \textbf{Corrección de línea base:} se aplica \texttt{airPLS} (biblioteca \texttt{pybaselines}) al espectro \textit{ya acumulado}, nunca antes de acumular, y se resta la línea base estimada.
+    \item \textbf{Corrección de línea base:} se aplica \texttt{airPLS} \citep{zhang2010airpls} (biblioteca \texttt{pybaselines}) al espectro \textit{ya acumulado}, nunca antes de acumular, y se resta la línea base estimada.
     \item \textbf{Recorte final por número de onda:} se restringe a la ventana 2800--3100~cm$^{-1}$ (rango real resultante: 2800{,}51--3099{,}11~cm$^{-1}$).
 \end{enumerate}
 
@@ -119,9 +119,9 @@ Se implementan siete métricas en el módulo \texttt{microraman.metrics}, como f
 
 \begin{itemize}
     \item \textbf{Coseno:} $s_{\cos} = \dfrac{\mathbf{a}\cdot\mathbf{b}}{\lVert\mathbf{a}\rVert\,\lVert\mathbf{b}\rVert}$.
-    \item \textbf{Pearson:} correlación lineal entre $\mathbf{a}$ y $\mathbf{b}$, invariante a desplazamientos aditivos de la línea base.
+    \item \textbf{Pearson:} correlación lineal entre $\mathbf{a}$ y $\mathbf{b}$ \citep{rodgers1988thirteen}, invariante a desplazamientos aditivos de la línea base.
     \item \textbf{Spearman:} correlación de Pearson calculada sobre los rangos; captura relaciones monótonas no lineales.
-    \item \textbf{SAM} (\textit{Spectral Angle Mapper}): $s_{\text{SAM}} = 1 - \theta/\pi$, con $\theta = \arccos(s_{\cos})$.
+    \item \textbf{SAM} (\textit{Spectral Angle Mapper}) \citep{kruse1993sips}: $s_{\text{SAM}} = 1 - \theta/\pi$, con $\theta = \arccos(s_{\cos})$.
     \item \textbf{HQI} (\textit{Hit Quality Index}): $s_{\text{HQI}} = s_{\cos}^{2}$, estándar en librerías comerciales de espectroscopía.
     \item \textbf{Euclídea} y \textbf{Manhattan:} distancias $L_2$ y $L_1$ sobre los vectores normalizados, transformadas a similitud mediante $s = 1/(1+d)$; la normalización previa evita que la métrica dependa de la intensidad absoluta, que crece con la acumulación.
 \end{itemize}
@@ -148,7 +148,7 @@ Como comprobación de robustez, el mismo análisis se repite sustituyendo la acu
 
 \subsection{Decisiones técnicas y su justificación}
 
-El proyecto sufrió un pivote de diseño respecto al anteproyecto original, documentado como ADR-004: la arquitectura inicial (ingesta con Apache Kafka y clasificación mediante los modelos preentrenados de Open Specy) se sustituyó por el diseño actual, centrado en la comparación empírica de métricas de similitud frente a la degradación de calidad, tras acordar con el director del proyecto que esta pregunta tenía mayor valor científico y era más viable de responder con los datos reales disponibles. La Tabla~\ref{tab:decisiones} sintetiza las decisiones vigentes y su justificación.
+El proyecto pivotó respecto al anteproyecto (ADR-004). La arquitectura inicial, con ingesta mediante Apache Kafka y clasificación con los modelos preentrenados de Open Specy, se sustituyó por la comparación empírica de métricas de similitud frente a la degradación de calidad. El director y yo acordamos el cambio por dos razones: la pregunta nueva no estaba respondida en la literatura, y era abordable con los datos reales disponibles. La Tabla~\ref{tab:decisiones} sintetiza las decisiones vigentes y su justificación.
 
 \begin{table}[H]
   \centering
@@ -227,13 +227,42 @@ La Tabla~\ref{tab:costes} presenta la estimación económica del proyecto. El pr
 
 \section{Viabilidad}
 
-El análisis de viabilidad se aborda en tres ejes:
+Viabilidad técnica, temporal y económica:
 
 \begin{itemize}
     \item \textbf{Viabilidad técnica:} el \textit{pipeline} de preprocesado, las siete métricas y el motor de \textit{matching} (pandas y Spark) están implementados, probados y validados numéricamente frente al protocolo de referencia. El riesgo técnico residual es bajo: no depende de tecnología inmadura, sino de la disponibilidad de un dato externo (la base de datos de referencia).
-    \item \textbf{Viabilidad temporal:} el riesgo más relevante identificado durante el proyecto era la dependencia de la base de datos de referencia. Se mitigó localizándola de acceso público y ejecutando el experimento completo antes de esta entrega intermedia (7~sep), lo que deja el margen completo hasta la entrega final (21~sep) para pulir la redacción de Resultados, Discusión y Conclusiones con las cifras reales ya obtenidas.
+    \item \textbf{Viabilidad temporal:} el riesgo más relevante identificado durante el proyecto era la dependencia de la base de datos de referencia. Se mitigó localizándola de acceso público y ejecutando el experimento completo antes de esta entrega intermedia (7~sep). Queda así todo el margen hasta el depósito final para pulir Resultados, Discusión y Conclusiones sobre las cifras ya obtenidas.
     \item \textbf{Viabilidad económica y sostenibilidad:} el coste efectivo es nulo, y la solución, al basarse en tecnologías \textit{open-source} ampliamente adoptadas y en un paquete instalable con pruebas automatizadas, tiene un bajo coste de mantenimiento y puede reutilizarse con otras bases de datos de referencia sin rediseñar el \textit{pipeline}.
 \end{itemize}
+
+\section{Sostenibilidad del proyecto}
+
+La sostenibilidad se entiende aquí en sus tres dimensiones habituales: la ambiental, referida al efecto sobre los ecosistemas y sobre el consumo de recursos; la social, referida al acceso al conocimiento y a la salud de las poblaciones afectadas; y la económica, referida al coste de operación y a la reutilización de lo construido. El proyecto se sitúa de lleno en la primera y toca las otras dos de forma indirecta.
+
+\subsection*{Dimensión ambiental}
+
+El objeto de estudio es, en sí mismo, un problema ambiental. La identificación fiable de microplásticos es el paso previo a cualquier política de vigilancia o de mitigación: no se puede regular lo que no se sabe medir. El proyecto contribuye a los Objetivos de Desarrollo Sostenible de la Agenda 2030 de Naciones Unidas por dos vías. De forma directa al ODS~14 (\emph{Vida submarina}), cuya meta 14.1 persigue reducir de forma significativa la contaminación marina, incluida la procedente de detritos plásticos; e indirectamente al ODS~6 (\emph{Agua limpia y saneamiento}) y al ODS~12 (\emph{Producción y consumo responsables}), que dependen de poder cuantificar la presencia de estos materiales en el medio.
+
+Hay además un efecto ambiental derivado del propio método. Determinar qué métrica de similitud tolera mejor los espectros de integración corta permite acortar el tiempo de medida por partícula sin perder fiabilidad en la identificación. Un menor tiempo de integración se traduce en menos horas de instrumento por muestra, y por tanto en menor consumo energético del equipo Raman y mayor número de partículas analizadas con los mismos recursos.
+
+\subsection*{Dimensión social}
+
+La contaminación por microplásticos es también un asunto de salud pública, lo que conecta el trabajo con el ODS~3 (\emph{Salud y bienestar}). Más allá del objeto de estudio, el enfoque adoptado tiene una consecuencia social concreta: reducir el tiempo de instrumento por muestra abarata el análisis y lo hace accesible a laboratorios con menos recursos, que son precisamente los de muchas de las regiones más expuestas a esta contaminación. En la misma línea, el proyecto se apoya en una biblioteca espectral de acceso público y publica su propio código, en coherencia con las prácticas de ciencia abierta.
+
+\subsection*{Dimensión económica}
+
+El coste efectivo del proyecto es nulo, al estar construido íntegramente sobre tecnologías \textit{open-source} y hardware ya disponible (véase el apartado de presupuesto). El diseño como paquete instalable, con pruebas automatizadas e integración continua, mantiene bajo el coste de mantenimiento y permite reaprovechar el trabajo con otras bibliotecas de referencia sin rediseñar el \textit{pipeline}.
+
+\subsection*{Estrategias adoptadas}
+
+De este análisis se derivan cuatro decisiones que el proyecto ya aplica y que conviene mantener en su continuación:
+
+\begin{enumerate}
+    \item Publicar el código como paquete abierto y reutilizable, en lugar de como scripts de un solo uso, para que el esfuerzo invertido sirva a otros grupos.
+    \item Emplear bibliotecas espectrales de acceso público en vez de generar mediciones nuevas cuando ya existen, evitando duplicar consumo de instrumento.
+    \item Orientar el resultado del experimento hacia la recomendación práctica de qué métrica usar con tiempos de integración cortos, que es la vía por la que el trabajo puede reducir el gasto energético del análisis.
+    \item Documentar el procedimiento de forma reproducible, condición para que los resultados puedan verificarse y reutilizarse sin repetir el trabajo experimental.
+\end{enumerate}
 
 \section{Resultados parciales del proyecto}
 
@@ -247,7 +276,7 @@ A la fecha de esta entrega intermedia se han alcanzado los siguientes hitos téc
     \item \textbf{OE5 completado:} el entregable visual solicitado por el director (similitud del mejor resultado frente al nivel de acumulación, una curva por métrica y por polímero) se generó con datos reales; véase la Figura~\ref{fig:similitud-acumulacion}.
 \end{itemize}
 
-En conjunto, el proyecto cuenta con 97~pruebas automatizadas en verde, ejecutadas en integración continua (GitHub Actions) en cada cambio, un paquete instalable (\texttt{pip install -e .}) y un repositorio Git separado para el código (\texttt{master\_bigdata}) y otro, independiente, para esta memoria (véase el Anexo~C). El experimento completo se ejecutó y validó antes de esta entrega intermedia.
+El proyecto cuenta con 97~pruebas automatizadas en verde, ejecutadas en integración continua (GitHub Actions) en cada cambio, un paquete instalable (\texttt{pip install -e .}) y un repositorio Git separado para el código (\texttt{master\_bigdata}) y otro, independiente, para esta memoria (véase el Anexo~C). El experimento completo se ejecutó y validó antes de esta entrega intermedia.
 
 \subsection{Resultados obtenidos}
 
@@ -275,7 +304,7 @@ La Tabla~\ref{tab:accuracy} resume la exactitud de cada métrica en la identific
   \label{tab:accuracy}
 \end{table}
 
-Pearson resulta la métrica más robusta frente a la acumulación real de espectros de baja integración, mientras que coseno, euclídea, HQI y SAM (empatadas) lo son frente a la degradación paramétrica controlada. Ninguna diferencia entre métricas resulta, sin embargo, estadísticamente significativa por pares tras la corrección de Holm (véase OE4 más arriba), por lo que estos resultados deben interpretarse como una tendencia y no como una superioridad confirmada, condicionada además por el tamaño muestral reducido (solo tres polímeros con verdad-terreno disponible).
+El orden cambia según el eje. Con acumulación real gana Pearson; con degradación paramétrica, el grupo coseno, euclídea, HQI y SAM, que empata en las cuatro. Ninguna diferencia entre métricas es, sin embargo, significativa por pares tras la corrección de Holm (véase OE4). Léanse por tanto como tendencia y no como superioridad demostrada: solo tres polímeros tienen verdad-terreno disponible.
 
 \begin{figure}[H]
 \centering
@@ -333,8 +362,8 @@ Esta tabla exige una lectura cuidadosa, porque el punto de ruptura medio \emph{n
 \label{fig:heatmap-degradacion}
 \end{figure}
 
-La comparación entre ambos mecanismos arroja una coincidencia parcial: los dos coinciden en que Manhattan y Spearman son las métricas menos fiables, pero discrepan en el primer puesto (Pearson en acumulación real frente al grupo coseno/euclídea/HQI/SAM en degradación paramétrica). Las curvas de la Figura~\ref{fig:similitud-snr} son además notablemente más suaves y monótonas que las de la Figura~\ref{fig:similitud-acumulacion}, lo que resulta coherente con el hecho de que la degradación sintética modela únicamente la pérdida de relación señal-ruido, mientras que la acumulación real de espectros de integración corta arrastra también artefactos residuales de línea base y de eliminación de picos espurios. Esta diferencia se discute en el Capítulo~5.
+La comparación entre ambos mecanismos arroja una coincidencia parcial: los dos coinciden en que Manhattan y Spearman son las métricas menos fiables, pero discrepan en el primer puesto (Pearson en acumulación real frente al grupo coseno/euclídea/HQI/SAM en degradación paramétrica). Las curvas de la Figura~\ref{fig:similitud-snr} son además más suaves y monótonas que las de la Figura~\ref{fig:similitud-acumulacion}. Tiene sentido: la degradación sintética solo modela la pérdida de relación señal-ruido, mientras que la acumulación real de espectros de integración corta arrastra también artefactos residuales de línea base y de eliminación de picos espurios. Esta diferencia se discute en el Capítulo~5.
 
 \textbf{Hallazgo no anticipado:} dos de los cinco polímeros medidos (BioPBS y ECOVIO) obtienen una exactitud del 0\% con las siete métricas, en todos los niveles de calidad, incluido el de máxima calidad. La causa, verificada, no es una limitación del \textit{pipeline} ni de las métricas: la \emph{Hagelskjær Microplastic Solution Library~1.1} no incluye BioPBS ni ECOVIO en su catálogo de 28~polímeros y 2~minerales de referencia. Esta limitación de cobertura de la base de datos se documenta en el capítulo de Discusión y se propone como línea de trabajo futuro ampliar o combinar la base de datos de referencia para cubrir ambos polímeros.
 
-La redacción detallada de estos resultados, junto con su discusión completa, se pulirá para la entrega final del proyecto; los datos aquí presentados proceden ya de la ejecución real, no de una base de datos sintética.
+Estos resultados se amplían en el capítulo de Discusión y se cierran en el depósito final; los números ya proceden de la ejecución real.
