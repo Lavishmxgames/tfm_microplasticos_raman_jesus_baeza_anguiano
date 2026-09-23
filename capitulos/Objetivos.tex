@@ -22,7 +22,7 @@ Los objetivos específicos derivan del objetivo general y han servido de guía p
 
 \section{Alcance y fuera del alcance}
 
-Con 300~horas de dedicación había que acotar el alcance desde el principio. \textbf{Se incluye}:
+La dedicación prevista de 300~horas obligó a acotar el alcance desde el principio. \textbf{Se incluye}:
 
 \begin{itemize}
     \item La implementación y validación numérica del \textit{pipeline} de preprocesado frente al protocolo de referencia del director del proyecto.
@@ -47,7 +47,7 @@ El proyecto aporta beneficios tanto a la comunidad científica dedicada al anál
 \begin{itemize}
     \item \textbf{Guía empírica y reproducible} sobre qué métrica de similitud espectral resulta más robusta frente a la degradación de la calidad de la señal, útil para quien deba decidir un criterio de \textit{matching} en condiciones de tiempo de integración limitado.
     \item \textbf{Pipeline validado y reutilizable}, verificado contra el protocolo de referencia sin diferencia numérica. Se aplica tal cual a otros conjuntos de espectros Raman de microplásticos.
-    \item \textbf{Escalado horizontal del cómputo de similitud}, mediante una implementación en Apache Spark equivalente y verificada frente a la referencia en \textit{pandas}, que permite extender el análisis a bases de datos de referencia de mayor tamaño sin rediseñar el pipeline.
-    \item \textbf{Comprobación cruzada metodológica.} El análisis se repite con un segundo mecanismo de degradación, independiente de la acumulación real. Si el ranking coincide, no es un artefacto del mecanismo.
+    \item \textbf{Escalado horizontal del cómputo de similitud}, mediante una implementación en Apache Spark equivalente y verificada frente a la referencia en \textit{pandas}, que permite extender el análisis a bases de datos de referencia de mayor tamaño sin rediseñar el \textit{pipeline}.
+    \item \textbf{Comprobación cruzada metodológica.} El análisis se repite con un segundo mecanismo de degradación, independiente de la acumulación real. Si el \textit{ranking} coincide, no es un artefacto del mecanismo.
     \item \textbf{Valor metodológico y docente:} el proyecto sirve como caso de estudio de aplicación de tecnologías de procesamiento a gran escala a un problema científico concreto, con un diseño experimental y estadístico documentado y reproducible.
 \end{itemize}

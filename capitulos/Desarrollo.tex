@@ -1,6 +1,6 @@
 \chapter{DESARROLLO DEL PROYECTO}
 
-Este es el capítulo técnico. Recorre la planificación real del proyecto, el \textit{pipeline} implementado y las decisiones que hay detrás, los recursos y el presupuesto, la viabilidad, la sostenibilidad y los resultados obtenidos hasta la fecha.
+Este capítulo recoge el desarrollo técnico del proyecto: la planificación real, el \textit{pipeline} implementado y las decisiones que lo sustentan, los recursos y el presupuesto, la viabilidad, la sostenibilidad y los resultados obtenidos.
 
 \section{Planificación del proyecto}
 
@@ -26,7 +26,7 @@ La planificación parte de la estructura en cuatro fases aprobada en el anteproy
   \label{tab:fases}
 \end{table}
 
-A la fecha de esta entrega intermedia (septiembre de 2026), las Fases~1 y~2 están completadas al 100\% y la Fase~3 se ha completado íntegramente, incluida la ejecución del experimento con datos reales: la base de datos de referencia \emph{Hagelskjær Microplastic Solution Library~1.1} se localizó de acceso público (Zenodo, DOI 10.5281/zenodo.17710809, licencia CC-BY-4.0) y se ejecutó la matriz experimental completa (\texttt{scripts/run\_experiment.py --database Databases/Hagelskjaer --full --degradation}), validada numéricamente frente al protocolo de referencia del director (1885 comparaciones alineadas, idéntico al criterio de validación acordado). La Fase~4 avanza con la redacción de los capítulos de resultados, discusión y conclusiones a partir de estos datos reales. La Figura~\ref{fig:gantt} muestra el cronograma y el estado actual.
+Las cuatro fases se han completado. Las Fases~1 y~2 concluyeron conforme a lo planificado, y la Fase~3 se ejecutó íntegramente, incluida la ejecución del experimento con datos reales: la base de datos de referencia \emph{Hagelskjær Microplastic Solution Library~1.1} se localizó de acceso público (Zenodo, DOI 10.5281/zenodo.17710809, licencia CC-BY-4.0) y se ejecutó la matriz experimental completa (\texttt{scripts/run\_experiment.py --database Databases/Hagelskjaer --full --degradation}), validada numéricamente frente al protocolo de referencia del director (1885 comparaciones alineadas, idéntico al criterio de validación acordado). La Fase~4 cerró la redacción de los capítulos de resultados, discusión y conclusiones a partir de estos datos reales. La Figura~\ref{fig:gantt} muestra el cronograma del proyecto.
 
 \begin{figure}[H]
 \centering
@@ -49,7 +49,7 @@ A la fecha de esta entrega intermedia (septiembre de 2026), las Fases~1 y~2 est�
 % Leyenda
 \node[anchor=west] at (0, 5.8) {\footnotesize Azul: fases 1--2 (implementación); Naranja: fases 3--4 (ejecución y redacción)};
 \end{tikzpicture}
-\caption{Cronograma del proyecto con estado a la entrega intermedia. La Fase~3 se completó, incluida la ejecución del experimento con datos reales, antes de la fecha de esta entrega.}
+\caption{Cronograma del proyecto con sus hitos de entrega. La Fase~3, incluida la ejecución del experimento con datos reales, se completó antes de la entrega intermedia.}
 \label{fig:gantt}
 \end{figure}
 
@@ -144,7 +144,7 @@ Se contrasta si existen diferencias significativas entre métricas en su capacid
     \item \textbf{Post-hoc:} test de Wilcoxon de rangos con signo para cada par de métricas, con corrección de Holm--Bonferroni.
 \end{itemize}
 
-Como comprobación de robustez, el mismo análisis se repite sustituyendo la acumulación por una degradación controlada del espectro más limpio de cada polímero (ruido gaussiano a una SNR objetivo, deriva de línea base y submuestreo; módulo \texttt{microraman.degradation}), usando la SNR como eje de calidad independiente. Un ranking de métricas coherente entre ambos mecanismos refuerza la fiabilidad de las conclusiones.
+Como comprobación de robustez, el mismo análisis se repite sustituyendo la acumulación por una degradación controlada del espectro más limpio de cada polímero (ruido gaussiano a una SNR objetivo, deriva de línea base y submuestreo; módulo \texttt{microraman.degradation}), usando la SNR como eje de calidad independiente. Un \textit{ranking} de métricas coherente entre ambos mecanismos refuerza la fiabilidad de las conclusiones.
 
 \subsection{Decisiones técnicas y su justificación}
 
@@ -165,7 +165,7 @@ El proyecto pivotó respecto al anteproyecto (ADR-004). La arquitectura inicial,
     \addlinespace
     Verificación cruzada pandas/Spark & Confiar únicamente en la implementación distribuida & Permite detectar errores de paralelización comparando resultados idénticos sobre el mismo dato sintético antes de ejecutar con datos reales. \\
     \addlinespace
-    Empaquetado como librería instalable (\texttt{pyproject.toml}) + CI (GitHub Actions) & Scripts sueltos sin empaquetar & Reproducibilidad, facilita los 97 tests automatizados y evita regresiones al iterar el pipeline. \\
+    Empaquetado como librería instalable (\texttt{pyproject.toml}) + CI (GitHub Actions) & Scripts sueltos sin empaquetar & Reproducibilidad, facilita los 97 tests automatizados y evita regresiones al iterar el \textit{pipeline}. \\
     \bottomrule
   \end{tabular}
   \caption{Decisiones técnicas clave del proyecto, tras el pivote de diseño (ADR-004), y su justificación.}
@@ -231,7 +231,7 @@ Viabilidad técnica, temporal y económica:
 
 \begin{itemize}
     \item \textbf{Viabilidad técnica:} el \textit{pipeline} de preprocesado, las siete métricas y el motor de \textit{matching} (pandas y Spark) están implementados, probados y validados numéricamente frente al protocolo de referencia. El riesgo técnico residual es bajo: no depende de tecnología inmadura, sino de la disponibilidad de un dato externo (la base de datos de referencia).
-    \item \textbf{Viabilidad temporal:} el riesgo más relevante identificado durante el proyecto era la dependencia de la base de datos de referencia. Se mitigó localizándola de acceso público y ejecutando el experimento completo antes de esta entrega intermedia (7~sep). Queda así todo el margen hasta el depósito final para pulir Resultados, Discusión y Conclusiones sobre las cifras ya obtenidas.
+    \item \textbf{Viabilidad temporal:} el riesgo más relevante identificado durante el proyecto era la dependencia de la base de datos de referencia. Se mitigó localizándola de acceso público y ejecutando el experimento completo antes de la entrega intermedia (7~sep), lo que dejó el margen restante del calendario para consolidar Resultados, Discusión y Conclusiones sobre las cifras ya obtenidas.
     \item \textbf{Viabilidad económica y sostenibilidad:} el coste efectivo es nulo, y la solución, al basarse en tecnologías \textit{open-source} ampliamente adoptadas y en un paquete instalable con pruebas automatizadas, tiene un bajo coste de mantenimiento y puede reutilizarse con otras bases de datos de referencia sin rediseñar el \textit{pipeline}.
 \end{itemize}
 
@@ -264,9 +264,9 @@ De este análisis se derivan cuatro decisiones que el proyecto ya aplica y que c
     \item Documentar el procedimiento de forma reproducible, condición para que los resultados puedan verificarse y reutilizarse sin repetir el trabajo experimental.
 \end{enumerate}
 
-\section{Resultados parciales del proyecto}
+\section{Resultados del proyecto}
 
-A la fecha de esta entrega intermedia se han alcanzado los siguientes hitos técnicos, cada uno vinculado con su objetivo específico. A diferencia de la planificación original, la Fase~3 se completó íntegramente, por lo que esta sección ya incluye resultados obtenidos con la base de datos de referencia real (no sintética):
+Se han alcanzado los siguientes hitos técnicos, cada uno vinculado con su objetivo específico. La Fase~3 se completó íntegramente, por lo que esta sección recoge resultados obtenidos con la base de datos de referencia real, no sintética:
 
 \begin{itemize}
     \item \textbf{OE1 completado:} el \textit{pipeline} de preprocesado (recorte por índice, \textit{despiking} de Coca-López, acumulación por suma, corrección de línea base airPLS, recorte final por número de onda) está implementado en el módulo \texttt{microraman} y validado punto a punto frente al protocolo de referencia del director sobre los espectros reales, con una diferencia máxima absoluta de~0 (\texttt{scripts/validate\_vs\_notebook.py}).
@@ -276,7 +276,7 @@ A la fecha de esta entrega intermedia se han alcanzado los siguientes hitos téc
     \item \textbf{OE5 completado:} el entregable visual solicitado por el director (similitud del mejor resultado frente al nivel de acumulación, una curva por métrica y por polímero) se generó con datos reales; véase la Figura~\ref{fig:similitud-acumulacion}.
 \end{itemize}
 
-El proyecto cuenta con 97~pruebas automatizadas en verde, ejecutadas en integración continua (GitHub Actions) en cada cambio, un paquete instalable (\texttt{pip install -e .}) y un repositorio Git separado para el código (\texttt{master\_bigdata}) y otro, independiente, para esta memoria (véase el Anexo~C). El experimento completo se ejecutó y validó antes de esta entrega intermedia.
+El proyecto cuenta con 97~pruebas automatizadas en verde, ejecutadas en integración continua (GitHub Actions) en cada cambio, un paquete instalable (\texttt{pip install -e .}) y un repositorio Git separado para el código (\texttt{master\_bigdata}) y otro, independiente, para esta memoria (véase el Anexo~C). El experimento completo se ejecutó y se validó frente al protocolo de referencia del director.
 
 \subsection{Resultados obtenidos}
 
@@ -313,7 +313,7 @@ El orden cambia según el eje. Con acumulación real gana Pearson; con degradaci
 \label{fig:similitud-acumulacion}
 \end{figure}
 
-\textbf{Punto de ruptura y ranking de robustez.} El punto de ruptura de una métrica para un polímero es el nivel de calidad mínimo a partir del cual el resultado de rango~1 es el polímero correcto \emph{de forma estable} (es decir, también para todos los niveles superiores). La Tabla~\ref{tab:ruptura} lo agrega por métrica y la Figura~\ref{fig:heatmap-acumulacion} lo desglosa por polímero.
+\textbf{Punto de ruptura y \textit{ranking} de robustez.} El punto de ruptura de una métrica para un polímero es el nivel de calidad mínimo a partir del cual el resultado de rango~1 es el polímero correcto \emph{de forma estable} (es decir, también para todos los niveles superiores). La Tabla~\ref{tab:ruptura} lo agrega por métrica y la Figura~\ref{fig:heatmap-acumulacion} lo desglosa por polímero.
 
 \begin{table}[H]
   \centering

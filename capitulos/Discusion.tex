@@ -10,7 +10,7 @@ El \textit{pipeline} de preprocesado reproduce el protocolo de referencia del di
 
 \section{Cambios respecto al planteamiento inicial}
 
-Respecto al anteproyecto original, el cambio grande fue el pivote de diseño del ADR-004. La arquitectura prevista al principio, con ingesta mediante Apache Kafka y clasificación con los modelos preentrenados de Open Specy sobre un flujo Spark Structured Streaming, se sustituyó por el diseño actual, centrado en la robustez de las métricas de similitud frente a la degradación de la calidad del espectro. El director y yo acordamos el cambio por tres razones:
+Respecto al anteproyecto original, el cambio de mayor calado fue el pivote de diseño del ADR-004. La arquitectura prevista al principio, con ingesta mediante Apache Kafka y clasificación con los modelos preentrenados de Open Specy sobre un flujo Spark Structured Streaming, se sustituyó por el diseño actual, centrado en la robustez de las métricas de similitud frente a la degradación de la calidad del espectro. El director y yo acordamos el cambio por tres razones:
 
 \begin{itemize}
     \item La literatura no recoge una comparación sistemática y a escala de las métricas de similitud habituales en \textit{matching} espectral frente a distintos niveles de degradación de la señal. La pregunta nueva estaba sin responder; la anterior, no.
@@ -33,12 +33,12 @@ El trabajo tiene cuatro limitaciones:
 
 \section{Interpretación de los primeros resultados}
 
-Entre los dos mecanismos de degradación el patrón no coincide del todo (Capítulo~4). Con acumulación real la métrica más robusta es Pearson; con degradación paramétrica lo son coseno, euclídea, HQI y SAM, que empatan entre sí. Los dos mecanismos sí coinciden en el furgón de cola: Manhattan y Spearman.
+Entre los dos mecanismos de degradación el patrón no coincide del todo (Capítulo~4). Con acumulación real la métrica más robusta es Pearson; con degradación paramétrica lo son coseno, euclídea, HQI y SAM, que empatan entre sí. Los dos mecanismos sí coinciden en las dos últimas posiciones: Manhattan y Spearman.
 
-Hay una explicación plausible. La acumulación real mejora la relación señal-ruido, pero puede dejar restos de deriva de línea base incluso después de \texttt{airPLS}. Pearson es inmune a esos desplazamientos aditivos; coseno y SAM son invariantes a escala, no a offset. Con la degradación paramétrica esa ventaja se diluye, porque allí el ruido gaussiano se añade sobre un espectro ya limpio y no queda offset que corregir.
+Existe una explicación plausible para esta discrepancia. La acumulación real mejora la relación señal-ruido, pero puede dejar restos de deriva de línea base incluso después de \texttt{airPLS}. Pearson es inmune a esos desplazamientos aditivos; coseno y SAM son invariantes a escala, no a offset. Con la degradación paramétrica esa ventaja se diluye, porque allí el ruido gaussiano se añade sobre un espectro ya limpio y no queda offset que corregir.
 
 La discrepancia tiene una consecuencia práctica: la métrica más adecuada depende del mecanismo de pérdida de calidad, y el resultado no debería trasladarse sin más a otros contextos de ruido instrumental.
 
 \section{Impacto esperado}
 
-La contribución principal es un \textit{pipeline} completo de preprocesado, comparación de métricas y análisis estadístico, validado numéricamente, cubierto por pruebas automatizadas y ya ejecutado sobre la biblioteca de referencia real. De él sale una guía empírica de qué métrica aguanta mejor según el mecanismo de degradación, aplicable tanto al análisis de microplásticos como a otros problemas de \textit{matching} espectral con señal degradada. Con dos cautelas: tres polímeros son pocos, y la biblioteca no cubre todo lo que se midió.
+La contribución principal es un \textit{pipeline} completo de preprocesado, comparación de métricas y análisis estadístico, validado numéricamente, cubierto por pruebas automatizadas y ya ejecutado sobre la biblioteca de referencia real. De él sale una guía empírica de qué métrica aguanta mejor según el mecanismo de degradación, aplicable tanto al análisis de microplásticos como a otros problemas de \textit{matching} espectral con señal degradada. Conviene mantener dos cautelas: el número de polímeros con verdad-terreno disponible es reducido, y la biblioteca de referencia no cubre todos los materiales medidos.
